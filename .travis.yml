@@ -1,0 +1,18 @@
+sudo: false
+
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+
+env:
+  - DJANGO="Django>=1.11,<2.0"
+  - DJANGO="Django>=2.0,<2.1"
+
+install:
+  - pip install $DJANGO -e .[tests]
+  - pip freeze
+
+script:
+  - pytest
