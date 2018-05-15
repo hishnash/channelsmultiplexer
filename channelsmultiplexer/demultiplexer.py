@@ -5,6 +5,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 import asyncio
 
+
 class AsyncJsonWebsocketDemultiplexer(AsyncJsonWebsocketConsumer):
     """
     JSON-understanding WebSocket consumer subclass that handles de-multiplexing streams using a "stream" key in a
@@ -16,6 +17,8 @@ class AsyncJsonWebsocketDemultiplexer(AsyncJsonWebsocketConsumer):
     application_close_timeout = 5
 
     def __init__(self, scope):
+        scope = scope.copy()
+        scope['demultiplexer_cls'] = self.__class__
         super().__init__(scope)
         self.application_streams = {}
         self.application_futures = {}
