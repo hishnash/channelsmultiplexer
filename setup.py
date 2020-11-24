@@ -16,13 +16,15 @@ setup(
     ],
     extras_require={
         'tests': [
-            'pytest~=3.7.1',
-            "pytest-django~=3.4.1",
-            "pytest-asyncio~=0.9",
+            'pytest~=6.1.2',
+            "pytest-django~=4.1.0",
+            "pytest-asyncio~=0.14.0",
             'coverage~=4.4',
         ],
     },
     classifiers=[
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ]
 )
