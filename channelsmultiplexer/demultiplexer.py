@@ -1,5 +1,6 @@
 from functools import partial
 
+from asgiref.compatibility import guarantee_single_callable
 from channels.consumer import get_handler_name
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
@@ -16,21 +17,27 @@ class AsyncJsonWebsocketDemultiplexer(AsyncJsonWebsocketConsumer):
     applications = {}
     application_close_timeout = 5
 
-    def __init__(self, scope):
-        scope = scope.copy()
-        scope['demultiplexer_cls'] = self.__class__
-        super().__init__(scope)
+    def __init__(self, **kwargs):
+        for key, app in kwargs.items():
+            self.applications[key] = app
+
+        super().__init__()
+
+    async def __call__(self, scope, receive, send):
         self.application_streams = {}
         self.application_futures = {}
         self.applications_accepting_frames = set()
         self.closing = False
 
-    async def __call__(self, receive, send):
+        scope = scope.copy()
+        scope['demultiplexer_cls'] = self.__class__
+        self.scope = scope
+
         loop = asyncio.get_event_loop()
         # create the child applications
         await loop.create_task(self._create_upstream_applications())
         # start observing for messages
-        message_consumer = loop.create_task(super().__call__(receive, send))
+        message_consumer = loop.create_task(super().__call__(scope, receive, send))
         try:
             # wait for either an upstream application to close or the message consumer loop.
             await asyncio.wait(
@@ -60,12 +67,13 @@ class AsyncJsonWebsocketDemultiplexer(AsyncJsonWebsocketConsumer):
         Create the upstream applications.
         """
         loop = asyncio.get_event_loop()
-        for steam_name, ApplicationsCls in self.applications.items():
-            application = ApplicationsCls(self.scope)
+        for steam_name, application in self.applications.items():
+            application = guarantee_single_callable(application)
             upstream_queue = asyncio.Queue()
             self.application_streams[steam_name] = upstream_queue
             self.application_futures[steam_name] = loop.create_task(
                 application(
+                    self.scope,
                     upstream_queue.get,
                     partial(self.dispatch_downstream, steam_name=steam_name)
                 )

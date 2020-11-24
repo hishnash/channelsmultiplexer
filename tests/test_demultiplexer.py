@@ -40,16 +40,16 @@ class RaiseInAcceptTestConsumer(AsyncJsonWebsocketConsumer):
 
 class EchoDemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
     applications = {
-        "echostream": EchoTestConsumer,
-        "altechostream": AltEchoTestConsumer,
-        "closeafterfirst": EchoCloseAfterFirstTestConsumer,
-        "neveraccept": NeverAcceptTestConsumer
+        "echostream": EchoTestConsumer(),
+        "altechostream": AltEchoTestConsumer(),
+        "closeafterfirst": EchoCloseAfterFirstTestConsumer(),
+        "neveraccept": NeverAcceptTestConsumer()
     }
 
 
 class RaiseInAcceptDemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
     applications = {
-        "raiseinaccept": RaiseInAcceptTestConsumer
+        "raiseinaccept": RaiseInAcceptTestConsumer()
     }
 
 
@@ -57,7 +57,7 @@ class RaiseInAcceptDemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
 async def test_stream_routing():
 
     communicator = WebsocketCommunicator(
-        EchoDemultiplexerAsyncJson,
+        EchoDemultiplexerAsyncJson(),
         "/"
     )
 
@@ -101,7 +101,7 @@ async def test_stream_routing():
 async def test_stream_routing_not_listed():
 
     communicator = WebsocketCommunicator(
-        EchoDemultiplexerAsyncJson,
+        EchoDemultiplexerAsyncJson(),
         "/"
     )
 
@@ -125,7 +125,7 @@ async def test_stream_routing_not_listed():
 async def test_stream_no_payload():
 
     communicator = WebsocketCommunicator(
-        EchoDemultiplexerAsyncJson,
+        EchoDemultiplexerAsyncJson(),
         "/"
     )
 
@@ -151,7 +151,7 @@ async def test_stream_close():
     """
 
     communicator = WebsocketCommunicator(
-        EchoDemultiplexerAsyncJson,
+        EchoDemultiplexerAsyncJson(),
         "/"
     )
 
@@ -199,7 +199,7 @@ async def test_stream_close():
 async def test_stream_routing_raiseinaccept():
 
     communicator = WebsocketCommunicator(
-        RaiseInAcceptDemultiplexerAsyncJson,
+        RaiseInAcceptDemultiplexerAsyncJson(),
         "/"
     )
 
@@ -219,11 +219,11 @@ async def test_stream_no_accept():
 
     class DemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
         applications = {
-            "test": TestConsumer
+            "test": TestConsumer()
         }
 
     communicator = WebsocketCommunicator(
-        DemultiplexerAsyncJson,
+        DemultiplexerAsyncJson(),
         "/"
     )
 
@@ -232,12 +232,12 @@ async def test_stream_no_accept():
 
     class DemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
         applications = {
-            "test": TestConsumer,
-            "echo": EchoTestConsumer
+            "test": TestConsumer(),
+            "echo": EchoTestConsumer()
         }
 
     communicator = WebsocketCommunicator(
-        DemultiplexerAsyncJson,
+        DemultiplexerAsyncJson(),
         "/"
     )
 
@@ -289,7 +289,7 @@ async def test_slow_disconnect():
         application_close_timeout = 0.1
 
         applications = {
-            "mystream": TestConsumer,
+            "mystream": TestConsumer(),
         }
 
         async def disconnect(self, code):
@@ -298,7 +298,7 @@ async def test_slow_disconnect():
             if results.get("sleep_start") and results.get("sleep_end") is None:
                 results["de-multiplexer-disconnect-order"] = True
 
-    communicator = WebsocketCommunicator(DemultiplexerAsyncJson, "/testws/")
+    communicator = WebsocketCommunicator(DemultiplexerAsyncJson(), "/testws/")
 
     connected, _ = await communicator.connect()
 
@@ -327,7 +327,7 @@ async def test_fast_disconnect():
         application_close_timeout = 0.1
 
         applications = {
-            "mystream": TestConsumer,
+            "mystream": TestConsumer(),
         }
 
         async def disconnect(self, code):
@@ -336,7 +336,7 @@ async def test_fast_disconnect():
             # check that this is called in the correct order!
             results["de-multiplexer-disconnect-order-post-wait"] = False
 
-    communicator = WebsocketCommunicator(DemultiplexerAsyncJson, "/testws/")
+    communicator = WebsocketCommunicator(DemultiplexerAsyncJson(), "/testws/")
     connected, _ = await communicator.connect()
 
     assert connected
@@ -356,14 +356,14 @@ async def test_nested_with_url_router():
         applications = {
             "pathfilter": URLRouter(
                 [
-                    url("^echo/?$", EchoTestConsumer),
-                    url("^altecho/?$", AltEchoTestConsumer),
+                    url("^echo/?$", EchoTestConsumer()),
+                    url("^altecho/?$", AltEchoTestConsumer()),
                 ]
             )
         }
 
     communicator = WebsocketCommunicator(
-        PathRoutedDemultiplexer,
+        PathRoutedDemultiplexer(),
         "/test"
     )
 
@@ -371,7 +371,7 @@ async def test_nested_with_url_router():
         await communicator.connect()
 
     communicator = WebsocketCommunicator(
-        PathRoutedDemultiplexer,
+        PathRoutedDemultiplexer(),
         "echo"
     )
 
@@ -396,7 +396,7 @@ async def test_nested_with_url_router():
     await communicator.disconnect()
 
     communicator = WebsocketCommunicator(
-        PathRoutedDemultiplexer,
+        PathRoutedDemultiplexer(),
         "altecho"
     )
 
