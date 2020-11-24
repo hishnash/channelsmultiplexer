@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='channelsmultiplexer',
-    version="0.0.2",
+    version="0.0.3",
     url='https://github.com/hishnash/channelsmultiplexer',
     author='Matthaus Woolard',
     author_email='matthaus.woolard@gmail.com',
@@ -12,7 +12,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     install_requires=[
-        'channels>=2.1.1',
+        'channels>=3.0',
     ],
     extras_require={
         'tests': [
@@ -23,7 +23,6 @@ setup(
         ],
     },
     classifiers=[
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ]
 )
