@@ -7,7 +7,7 @@ Django Channels_ does not yet include a Multiplexing Consumer. This project aims
 .. _Channels: https://github.com/django/channels
 
 Version Compatibility
--------
+---------------------
 
 
 +--------------------+--------------------------------+
@@ -51,7 +51,7 @@ or you can use the `AsyncJsonWebsocketDemultiplexer` type directly and pass the 
 
 .. code-block:: python
 
-	application = ProtocolTypeRouter({
+  application = ProtocolTypeRouter({
 			"websocket": URLRouter([
 					url(r"^ws/$", AsyncJsonWebsocketDemultiplexer(
 						echostream = EchoTestConsumer(),
