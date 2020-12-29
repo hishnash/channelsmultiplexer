@@ -40,16 +40,16 @@ class RaiseInAcceptTestConsumer(AsyncJsonWebsocketConsumer):
 
 class EchoDemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
     applications = {
-        "echostream": EchoTestConsumer(),
-        "altechostream": AltEchoTestConsumer(),
-        "closeafterfirst": EchoCloseAfterFirstTestConsumer(),
-        "neveraccept": NeverAcceptTestConsumer()
+        "echostream": EchoTestConsumer.as_asgi(),
+        "altechostream": AltEchoTestConsumer.as_asgi(),
+        "closeafterfirst": EchoCloseAfterFirstTestConsumer.as_asgi(),
+        "neveraccept": NeverAcceptTestConsumer.as_asgi()
     }
 
 
 class RaiseInAcceptDemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
     applications = {
-        "raiseinaccept": RaiseInAcceptTestConsumer()
+        "raiseinaccept": RaiseInAcceptTestConsumer.as_asgi()
     }
 
 
@@ -57,7 +57,7 @@ class RaiseInAcceptDemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
 async def test_stream_routing():
 
     communicator = WebsocketCommunicator(
-        EchoDemultiplexerAsyncJson(),
+        EchoDemultiplexerAsyncJson.as_asgi(),
         "/"
     )
 
@@ -356,14 +356,14 @@ async def test_nested_with_url_router():
         applications = {
             "pathfilter": URLRouter(
                 [
-                    url("^echo/?$", EchoTestConsumer()),
-                    url("^altecho/?$", AltEchoTestConsumer()),
+                    url("^echo/?$", EchoTestConsumer.as_asgi()),
+                    url("^altecho/?$", AltEchoTestConsumer.as_asgi()),
                 ]
             )
         }
 
     communicator = WebsocketCommunicator(
-        PathRoutedDemultiplexer(),
+        PathRoutedDemultiplexer.as_asgi(),
         "/test"
     )
 
