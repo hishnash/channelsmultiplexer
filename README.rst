@@ -39,13 +39,15 @@ to create a De-Multiplexer
 
   class EchoDemultiplexerAsyncJson(AsyncJsonWebsocketDemultiplexer):
       applications = {
-          "echostream": EchoTestConsumer(),
-          "altechostream": AltEchoTestConsumer(),
-          "closeafterfirst": EchoCloseAfterFirstTestConsumer(),
-          "neveraccept": NeverAcceptTestConsumer()
+          "echostream": EchoTestConsumer.as_asgi(),
+          "altechostream": AltEchoTestConsumer.as_asgi(),
+          "closeafterfirst": EchoCloseAfterFirstTestConsumer.as_asgi(),
+          "neveraccept": NeverAcceptTestConsumer.as_asgi()
       }
 
 
+
+When using this within our `application` you should reference it like this `EchoDemultiplexerAsyncJson.as_asgi()`.
 
 or you can use the `AsyncJsonWebsocketDemultiplexer` type directly and pass the multiplexed upstream consumers as kwargs.
 
@@ -53,11 +55,11 @@ or you can use the `AsyncJsonWebsocketDemultiplexer` type directly and pass the 
 
   application = ProtocolTypeRouter({
 			"websocket": URLRouter([
-					url(r"^ws/$", AsyncJsonWebsocketDemultiplexer(
-						echostream = EchoTestConsumer(),
-						altechostream = AltEchoTestConsumer(),
-						closeafterfirst = EchoCloseAfterFirstTestConsumer(),
-						neveraccept = NeverAcceptTestConsumer()
+					url(r"^ws/$", AsyncJsonWebsocketDemultiplexer.as_asgi(
+						echostream = EchoTestConsumer.as_asgi(),
+						altechostream = AltEchoTestConsumer.as_asgi(),
+						closeafterfirst = EchoCloseAfterFirstTestConsumer.as_asgi(),
+						neveraccept = NeverAcceptTestConsumer.as_asgi()
 					)),
 			]),
 			"telegram": ChattyBotConsumer.as_asgi(),
